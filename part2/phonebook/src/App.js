@@ -90,7 +90,7 @@ const App = () => {
   }
 
 
-  const personsToShow = persons.filter(p => p.name.includes(filter))
+  const personsToShow = persons.filter(p => p.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
 
 
   return (
