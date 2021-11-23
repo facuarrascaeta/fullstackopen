@@ -3,6 +3,7 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
+  const [ message, setMessage ] = useState(null)
+  const [ messageColor, setMessageColor ] = useState('')
 
   useEffect(() => {
     personService
@@ -32,6 +35,11 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setMessage(`Added ${returnedPerson.name}`)
+          setMessageColor('green')
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
 
     } else {
@@ -43,6 +51,14 @@ const App = () => {
           .update(personChanged)
           .then(returnedPerson => {
             setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
+          })
+          .catch(error => {
+            setMessage(`Information of ${newName} has already been removed from the server`)
+            setMessageColor('red')
+            setPersons(persons.filter(p => p.id !== personChanged.id ))
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
       }
     }
@@ -80,6 +96,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} color={messageColor} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>add a new</h3>
       <PersonForm
